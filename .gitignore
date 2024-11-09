@@ -31,7 +31,6 @@ lib64/
 # Other files
 poised-artwork-*.json
 
-# Python dependency file
-requirements.txt
+
 
 

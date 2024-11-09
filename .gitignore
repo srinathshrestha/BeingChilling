@@ -34,5 +34,4 @@ poised-artwork-*.json
 # Python dependency file
 requirements.txt
 
-# Static and media files (if you have media files that are uploaded, specify the folder)
-static/
+

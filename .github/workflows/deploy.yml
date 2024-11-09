@@ -39,11 +39,9 @@ jobs:
 
       - name: Deploy to Cloud Run
         run: |
-          gcloud run deploy movie-streaming-app \
+            gcloud run deploy movie-streaming-app \
             --image gcr.io/poised-artwork-435918-s3/movie-streaming-app \
             --platform managed \
             --region asia-south2 \
             --allow-unauthenticated \
-            --timeout=600s \
-            --memory=1Gi \
-            --cpu=2
+            --update-env-vars DATABASE_URL=${{ secrets.DATABASE_URL }}

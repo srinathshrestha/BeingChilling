@@ -1,0 +1,38 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*.pyo
+
+# Environment
+.venv/
+venv/
+.env
+
+# Logs and temporary files
+*.log
+*.bak
+*.swp
+*.tmp
+
+# IDE and editor settings
+.vscode/
+.idea/
+
+# Virtual environment
+venv/
+bin/
+include/
+lib/
+lib64/
+
+# Ignore Google Cloud service account JSON file
+*.json
+
+# Other files
+poised-artwork-*.json
+
+# Python dependency file
+requirements.txt
+
+# Static and media files (if you have media files that are uploaded, specify the folder)
+static/

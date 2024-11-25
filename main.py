@@ -16,6 +16,9 @@ load_dotenv()
 
 # Database configuration
 DATABASE_URL = os.getenv("DATABASE_URL")
+if DATABASE_URL is None:
+    raise ValueError("DATABASE_URL environment variable is not set!")
+
 
 engine = create_engine(DATABASE_URL)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
@@ -33,6 +36,8 @@ def get_db():
     db = SessionLocal()
     try:
         yield db
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
     finally:
         db.close()
 
@@ -46,7 +51,7 @@ class Movie(Base):
     category = Column(String, nullable=True)
     poster_url = Column(String, nullable=True)
     gcp_path = Column(String, nullable=False)
-    uploaded_at = Column(DateTime, default=datetime.now)
+    uploaded_at = Column(DateTime, default=datetime.utcnow)
     movie_cast = Column(String, nullable=True)
     director = Column(String, nullable=True)
     runtime = Column(Integer, nullable=True)  # Runtime in minutes

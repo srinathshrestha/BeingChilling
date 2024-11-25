@@ -110,3 +110,73 @@ body {
 .vjs-play-control {
   font-size: 2em; /* Larger play button for the center */
 }
+.video-section {
+  margin: 20px auto;
+  width: 90%;
+  max-width: 900px;
+  background-color: #1e1e1e;
+  border-radius: 10px;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.5);
+  padding: 20px;
+}
+
+#videoContainer {
+  margin-bottom: 20px;
+  border-radius: 10px;
+  overflow: hidden;
+  background-color: #000;
+}
+
+#player {
+  width: 100%;
+  height: auto;
+  border-radius: 10px;
+}
+
+.movie-description {
+  color: #ccc;
+  text-align: left;
+  font-size: 1.2em;
+  margin-top: 20px;
+  line-height: 1.5;
+}
+
+.movie-description h2 {
+  color: #ff5733;
+  margin-bottom: 10px;
+  text-align: center;
+}
+
+.movie-details {
+  margin: 20px auto;
+  padding: 20px;
+  width: 90%;
+  max-width: 900px;
+  background-color: #1e1e1e;
+  border-radius: 10px;
+  color: #fff;
+  text-align: left;
+}
+
+.movie-details h2 {
+  color: #ff5733;
+  margin-bottom: 10px;
+  text-align: center;
+}
+
+.movie-details p {
+  font-size: 1.1em;
+  margin: 10px 0;
+  line-height: 1.6;
+}
+
+.movie-details strong {
+  color: #ffcc00;
+}
+
+#controlsHint {
+  margin-top: 20px;
+  font-size: 0.9em;
+  color: #bbb;
+  text-align: center;
+}

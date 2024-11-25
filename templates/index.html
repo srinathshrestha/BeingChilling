@@ -4,97 +4,166 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Movie Streaming App</title>
-    <link rel="stylesheet" href="/static/css/styles.css" />
+    <link rel="stylesheet" href="static/css/styles.css" />
   </head>
 
   <body>
-    <header>
+    <nav class="sticky-nav">
       <h1>Welcome BingChillin</h1>
-    </header>
+      <div class="filters-container">
+        <div class="search-row">
+          <input
+            type="text"
+            id="search"
+            placeholder="Search movies by name..."
+          />
+          <button onclick="fetchMovies()">Search</button>
+        </div>
+        <div class="filters-row">
+          <select id="categoryFilter">
+            <option value="">All Categories</option>
+            <option value="Action">Action</option>
+            <option value="Comedy">Comedy</option>
+            <option value="Drama">Drama</option>
+            <option value="Romance">Romance</option>
+            <option value="Animation">Animation</option>
+          </select>
+          <select id="sortBy">
+            <option value="">Sort By</option>
+            <option value="release_date_desc">Latest Release</option>
+            <option value="release_date_asc">Oldest Release</option>
+            <option value="runtime_desc">Longest Runtime</option>
+            <option value="runtime_asc">Shortest Runtime</option>
+          </select>
+        </div>
+      </div>
+    </nav>
 
-    <section id="filters">
-      <input type="text" id="search" placeholder="Search movies by name..." />
-      <select id="categoryFilter">
-        <option value="">All Categories</option>
-        <option value="Action">Action</option>
-        <option value="Comedy">Comedy</option>
-        <option value="Drama">Drama</option>
-      </select>
-      <button onclick="fetchMovies()">Search</button>
-    </section>
+    <main>
+      <section id="movieList">
+        <h2>Available Movies</h2>
+        <ul id="movies">
+          {% for movie in movies %}
+          <li>
+            <a href="/movies/{{ movie.id }}/stream">
+              <div class="image-container">
+                {% if movie.poster_url %}
+                <img
+                  src="{{ movie.poster_url }}"
+                  alt="{{ movie.title }} poster"
+                />
+                {% else %}
+                <p>No Image Available</p>
+                {% endif %}
+                <div class="duration-badge">{{ movie.runtime }} min</div>
+              </div>
+              <div class="movie-info">
+                <h3>{{ movie.title }}</h3>
+                <p class="categories">{{ movie.category }}</p>
+                <div class="movie-metadata">
+                  <span class="release-date"
+                    >Released: {{ movie.release_date.strftime('%b %d, %Y') if
+                    movie.release_date else 'N/A' }}</span
+                  >
+                  
+                </div>
+              </div>
+            </a>
+          </li>
+          {% endfor %}
+        </ul>
+      </section>
+    </main>
 
-    <section id="movieList">
-      <h2>Available Movies</h2>
-      <ul id="movies">
-        {% for movie in movies %}
-        <li>
-          <a href="/movies/{{ movie.id }}/stream">
-            {% if movie.poster_url %}
-            <div class="image-container">
-              <img
-                src="{{ movie.poster_url }}"
-                alt="{{ movie.title }} poster"
-              />
-            </div>
-            {% else %}
-            <div class="image-container">
-              <p>No Image Available</p>
-            </div>
-            {% endif %}
-            <p><strong>{{ movie.title }}</strong> - {{ movie.category }}</p>
-          </a>
-        </li>
-        {% endfor %}
-      </ul>
-    </section>
+    <footer>
+      <div class="footer-content">
+        <div class="footer-section">
+          <h3>About BingChillin</h3>
+          <p>Your favorite movie streaming platform</p>
+        </div>
+        <div class="footer-section">
+          <h3>Quick Links</h3>
+          <ul>
+            <li><a href="#">Home</a></li>
+            <li><a href="#">Movies</a></li>
+            <li><a href="#">Categories</a></li>
+          </ul>
+        </div>
+        <div class="footer-section">
+          <h3>Contact</h3>
+          <p>Email: support@bingchillin.com</p>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>Made by Ubermensh © 2024 BingChillin. All rights reserved.</p>
+      </div>
+    </footer>
 
     <script>
       async function fetchMovies() {
         const category = document.getElementById("categoryFilter").value;
         const name = document.getElementById("search").value;
+        const sort = document.getElementById("sortBy").value;
 
         let url = "/movies/";
         const params = [];
-        if (category) params.push(`category=${category}`);
-        if (name) params.push(`name=${name}`);
+        if (category) params.push(`category=${encodeURIComponent(category)}`);
+        if (name) params.push(`name=${encodeURIComponent(name)}`);
+        if (sort) params.push(`sort=${encodeURIComponent(sort)}`);
         if (params.length > 0) url += `?${params.join("&")}`;
 
-        const response = await fetch(url);
-        const data = await response.json();
-        const moviesList = document.getElementById("movies");
-        moviesList.innerHTML = ""; // Clear the previous list
+        try {
+          const response = await fetch(url);
+          if (!response.ok) throw new Error("Network response was not ok");
+          const data = await response.json();
 
-        data.movies.forEach((movie) => {
-          const listItem = document.createElement("li");
+          const moviesList = document.getElementById("movies");
+          moviesList.innerHTML = "";
 
-          // Create the link to the streaming page
-          const link = document.createElement("a");
-          link.href = `/movies/${movie.id}/stream`;
+          data.movies.forEach((movie) => {
+            const releaseDate = movie.release_date
+              ? new Date(movie.release_date).toLocaleDateString("en-US", {
+                  year: "numeric",
+                  month: "short",
+                  day: "numeric",
+                })
+              : "N/A";
 
-          // If there is a poster URL, display the image
-          if (movie.poster_url) {
-            const imageContainer = document.createElement("div");
-            imageContainer.className = "image-container";
-            const img = document.createElement("img");
-            img.src = movie.poster_url;
-            img.alt = movie.title + " poster";
-            imageContainer.appendChild(img);
-            link.appendChild(imageContainer);
-          } else {
-            const noImageText = document.createElement("p");
-            noImageText.textContent = "No Image Available";
-            link.appendChild(noImageText);
-          }
-
-          const titleText = document.createElement("p");
-          titleText.innerHTML = `<strong>${movie.title}</strong> - ${movie.category}`;
-          link.appendChild(titleText);
-
-          listItem.appendChild(link);
-          moviesList.appendChild(listItem);
-        });
+            const listItem = document.createElement("li");
+            listItem.innerHTML = `
+              <a href="/movies/${movie.id}/stream">
+                <div class="image-container">
+                  ${
+                    movie.poster_url
+                      ? `<img src="${movie.poster_url}" alt="${movie.title} poster" />`
+                      : "<p>No Image Available</p>"
+                  }
+                  <div class="duration-badge">${movie.runtime} min</div>
+                </div>
+                <div class="movie-info">
+                  <h3>${movie.title}</h3>
+                  <p class="categories">${movie.category}</p>
+                  <div class="movie-metadata">
+                    <span class="release-date">Released: ${releaseDate}</span>
+                    <span class="rating">⭐ ${
+                      movie.rating ? movie.rating.toFixed(1) : "N/A"
+                    }</span>
+                  </div>
+                </div>
+              </a>
+            `;
+            moviesList.appendChild(listItem);
+          });
+        } catch (error) {
+          console.error("Error fetching movies:", error);
+        }
       }
+
+      // Add event listeners for automatic filtering
+      document
+        .getElementById("categoryFilter")
+        .addEventListener("change", fetchMovies);
+      document.getElementById("sortBy").addEventListener("change", fetchMovies);
     </script>
-    <footer>Made by Ubermensh</footer>
   </body>
 </html>

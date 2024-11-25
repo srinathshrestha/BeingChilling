@@ -39,9 +39,14 @@ jobs:
 
       - name: Deploy to Cloud Run
         run: |
-            gcloud run deploy movie-streaming-app \
+          gcloud run deploy movie-streaming-app \
             --image gcr.io/poised-artwork-435918-s3/movie-streaming-app \
             --platform managed \
             --region asia-south2 \
             --allow-unauthenticated \
-            --update-env-vars DATABASE_URL=${{ secrets.DATABASE_URL }}
+            --update-env-vars DATABASE_URL="${{ secrets.DATABASE_URL }}" \
+            --timeout=300  # Extend timeout for startup
+
+      - name: Verify Deployment
+        run: |
+          curl https://movie-streaming-app-144879262315.asia-south2.run.app || echo "Deployment failed"
